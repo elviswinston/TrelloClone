@@ -1,0 +1,757 @@
+﻿@{
+    Layout = null;
+}
+@model List<ProjectManagement.Models.List>
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="~/styles/css/Board/onboard.css" />
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="~/styles/vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="~/styles/vendor/jquery/jquery-3.2.1.min.js"></script>
+    <script src="~/styles/vendor/bootstrap/js/popper.js"></script>
+    <script src="~/styles/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/styles/vendor/tilt/tilt.jquery.min.js"></script>
+    <script src="https://kit.fontawesome.com/2c807ed367.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+</head>
+<body>
+    <div class="wrapper">
+        <header class="masthead">
+            <div class="boards-menu">
+                <a href="@Url.Action("Index", "Home")" class="boards-btn button"><i class="fab fa-trello boards-btn-icon"></i>Boards</a>
+
+                <!--
+                <div class="board-search">
+                    <input type="search" class="board-search-input" aria-label="Board Search">
+                    <i class="fas fa-search search-icon" aria-hidden="true"></i>
+                </div>
+                -->
+
+            </div>
+            <div class="logo">
+                <h1><i class="fab fa-trello logo-icon" aria-hidden="true"></i></h1>
+            </div>
+            <div class="user-settings">
+                <div class="user-settings-btn button" aria-label="Create" data-toggle="modal" data-target="#addCollabModal">
+                    <i class="fas fa-plus" aria-hidden="true"></i>
+                </div>
+                <div class="user-settings-btn button" aria-label="Information">
+                    <i class="fas fa-info-circle" aria-hidden="true"></i>
+                </div>
+                <div class="user-settings-btn button" aria-label="Notifications">
+                    <i class="fas fa-bell" aria-hidden="true"></i>
+                </div>
+                <div class="user-settings-btn button" aria-label="User Settings">
+                    <i class="fas fa-user-circle" aria-hidden="true"></i>
+                    <div>
+                        <a href="@Url.Action("Logout", "Account")">Đăng xuất</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <div class="board-info-bar">
+            <div class="board-controls">
+                <button class="board-title button">
+                    <h2>@ViewBag.BoardName</h2>
+                </button>
+                <input type="text" name="boardName" hidden />
+                <button class="star-btn button" aria-label="Star Board">
+                    <i class="far fa-star" aria-hidden="true"></i>
+                </button>
+            </div>
+            <input type="text" name="boardId" value="@ViewBag.boardId" hidden />
+            <a href="#" class="delete-board-btn btn btn-danger">Xóa bảng</a>
+            <!-- <button class="menu-btn button"><i class="fas fa-ellipsis-h menu-btn-icon" aria-hidden="true"></i>Show Menu</button> -->
+        </div>
+        <div class="lists-container" id="list">
+            @foreach (var list in Model)
+            {
+                <div class="list">
+                    <div class="list-title">
+                        <h3>@list.ListName</h3>
+                        <input type="text" name="listName" hidden style="margin: 10px 0 10px 10px" />
+                        <input type="text" name="listId" hidden value="@list.ListID" />
+                        <a href="#" class="delete-list-btn btn btn-danger ml-auto">Xóa</a>
+                    </div>
+                    <ul class="list-items">
+                        @Html.Action("ListCard", "Card", new { listId = list.ListID })
+                    </ul>
+                    <button class="add-card-btn button">Thêm thẻ</button>
+                    <input type="text" name="listId" value="@list.ListID" hidden />
+                </div>
+            }
+            <button class="add-list-btn button">Thêm danh sách</button>
+        </div>
+        <div class="modal" id="addListModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                        <div class="modal-body">
+                            <input type="text" hidden name="boardId" value="@ViewBag.BoardID" />
+                            <input type="text" class="form-control field1" name="listName" placeholder="Nhập tên danh sách" />
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary" disabled="disabled">Tạo danh sách</button>
+                        </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal" id="addCardModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                        <div class="modal-body">
+                            <input type="text" name="listId" value="" hidden/>
+                            <input type="text" class="form-control field2" name="cardTitle" placeholder="Nhập tên thẻ"/>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary" disabled="disabled">Tạo thẻ</button>
+                        </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal" id="addCollabModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Thêm thành viên</h3>
+                        </div>
+                        <div class="modal-body">
+                            <input type="text" hidden name="boardId" value="@ViewBag.BoardID" />
+                            <input type="email" class="form-control field3" name="emailCollab" placeholder="Nhập email của thành viên" required />
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" disabled="disabled">Thêm thành viên</button>
+                        </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal" id="cardModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div class="card-title">
+                            <i class="fas fa-credit-card"></i>
+                            <h3></h3>
+                            <input type="text" name="cardTitle" hidden />
+                            <a href="#" class="btn btn-danger ml-auto delete-card-btn">Xóa thẻ</a>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-feature row">
+                                <div class="tag col-xs-6">
+                                    <h4>Nhãn</h4>
+                                    <button>asd</button>
+                                    <input hidden />
+                                </div>
+                                <div class="expiry col-xs-6">
+                                    <h4>Ngày hết hạn</h4>
+                                    <input type="date" />
+                                </div>
+                            </div>
+                            <div class="description">
+                                <i class="fas fa-list"></i>
+                                <label>Mô tả</label>
+                                <a class="edit-btn" href="#">Sửa</a>
+                            </div>
+                            <div class="desc-text">
+                                <p></p>
+                                <textarea class="desc-textarea" hidden></textarea>
+                                <a class="save-btn" href="#" hidden>Lưu</a>
+                            </div>
+                            <div class="task-list">
+                                <i class="far fa-check-square"></i>
+                                <label>Việc cần làm</label>
+                                <a class="add-task-btn" href="#">Thêm</a>
+                                <div class="tasks">
+
+                                </div>
+                                <div class="add-task" hidden>
+                                    <textarea class="task-textarea"></textarea>
+                                    <a class="add-btn" href="#">Thêm</a>
+                                </div>
+                            </div>
+                            <input type="text" class="card-desc" name="cardDesc" value="" hidden />
+                            <input type="text" class="card-id" name="cardId" value="" hidden />
+                            <input type="text" class="card-tag" name="cardTag" value="" hidden />
+                            <input type="date" class="card-expiry" name="cardExpiry" value="" hidden />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script>
+    $(document).ready(function () {
+        $(".add-card-btn").click(function () {
+            $("#addCardModal").find('input[name="listId"]').val($(this).parent().find('input[name="listId"]').val());
+            $("#addCardModal").modal("show");
+        });
+        $(".add-list-btn").click(function () {
+            $("#addListModal").modal("show");
+        });
+        $(".field").keyup(function () {
+            let empty = false;
+
+            $(".field input").each(function () {
+                empty = $(this).val().length == 0;
+            });
+
+            if (empty)
+                $(this).find("button").attr("disabled", "disabled");
+            else
+                $(this).find("button").attr("disabled", false);
+        });
+        $(".field1").keyup(function () {
+            if ($(this).val() == "")
+                $(this).parent().parent().find("button").attr("disabled", "disabled");
+            else
+                $(this).parent().parent().find("button").attr("disabled", false);
+        });
+        $(".field2").keyup(function () {
+            if ($(this).val() == "")
+                $(this).parent().parent().find("button").attr("disabled", "disabled");
+            else
+                $(this).parent().parent().find("button").attr("disabled", false);
+        });
+        $(".field3").keyup(function () {
+            if ($(this).val() == "")
+                $(this).parent().parent().find("button").attr("disabled", "disabled");
+            else
+                $(this).parent().parent().find("button").attr("disabled", false);
+        });
+        $('#addListModal').on('hidden.bs.modal', function () {
+            $(this).find('input[name="listName"]').val("");
+            $(this).find("button").attr("disabled", "disabled");
+        });
+        $('#addCardModal').on('hidden.bs.modal', function () {
+            $(this).find('input[name="cardTitle"]').val("");
+            $(this).find("button").attr("disabled", "disabled");
+        });
+        $('#addCollabModal').on('hidden.bs.modal', function () {
+            $(this).find('input[name="emailCollab"]').val("");
+            $(this).find("button").attr("disabled", "disabled");
+        });
+        $('#cardModal').on('hidden.bs.modal', function () {
+            $(".desc-text textarea").val("");
+            $(".desc-text textarea").attr("hidden", "");
+            $(".desc-text .save-btn").attr("hidden", "");
+            location.reload();
+        });
+        $(".card").click(function () {
+            $("#cardModal").modal("show");
+            $("#cardModal .card-title h3").html($(this).html());
+            $("#cardModal .desc-text p").html($(this).find('input[name="cardDesc"]').val());
+            $("#cardModal .tag button").html($(this).find('input[name="cardTag"]').val());
+            $("#cardModal .expiry input").val($(this).find('input[name="cardExpiry"]').val());
+            $('#cardModal input[name="cardDesc"]').val($(this).find('input[name="cardDesc"]').val());
+            $('#cardModal input[name="cardId"]').val($(this).find('input[name="cardId"]').val());
+            $('#cardModal input[name="cardTag"]').val($(this).find('input[name="cardTag"]').val());
+            $('#cardModal input[name="cardExpiry"]').val($(this).find('input[name="cardExpiry"]').val());
+
+            data = {
+                cardId: $(this).find('input[name="cardId"]').val()
+            };
+
+             $.ajax({
+                type: "GET",
+                url: '@Url.Action("ListTask", "Task")',
+                data: data,
+                 success: function (data) {
+                     $(".tasks").html(data)
+                 }
+            });
+        });
+        $(".edit-btn").click(function () {
+            $(".desc-text p").hide();
+            $(".desc-text textarea").removeAttr("hidden");
+            $(".desc-text .save-btn").removeAttr("hidden");
+        });
+        $(".save-btn").click(function () {
+            var data = {
+                cardId: $("#cardModal").find('input[name="cardId"]').val(),
+                desc: $(".desc-textarea").val()
+            };
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("UpdateDescription", "Card")',
+                data: data,
+                success: function (data) {
+                    $(".desc-text p").html(data[0]["Description"]);
+                }
+            });
+            $(".desc-text p").show();
+            $(".desc-text textarea").attr("hidden", "");
+            $(".desc-text .save-btn").attr("hidden", "");
+        });
+        $(".tag-btn").click(function () {
+
+        });
+        $(".tag button").click(function () {
+            $(this).hide();
+            $(".tag input").removeAttr("hidden");
+            $(".tag input").focus();
+        })
+        $(".tag input").focusout(function () {
+            if ($(this).val() != "") {
+                $(".tag button").html($(this).val());
+
+                var data = {
+                    cardId: $('#cardModal input[name="cardId"]').val(),
+                    tag: $(this).val()
+                };
+
+                 $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("UpdateTag", "Card")',
+                    data: data,
+                     success: function (data) {
+                         $(".tag button").html(data[0]['Tag']);
+                    }
+                });
+            };
+            $(".tag button").show();
+            $(this).attr("hidden", "");
+        });
+        $('.expiry input[type="date"]').change(function () {
+            var data = {
+                cardId: $('#cardModal input[name="cardId"]').val(),
+                expiry: $(this).val()
+            }
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("UpdateExpiry", "Card")',
+                data: data,
+                success: function (data) {
+                    console.log(data[0]['ExpiryDay']);
+                }
+            });
+        });
+
+        $(".add-task-btn").click(function () {
+            $(".add-task").removeAUrlrltr("hidden");
+        });
+
+
+
+        $(".add-task .add-btn").click(function () {
+            var data = {
+                cardId: $('#cardModal input[name="cardId"]').val(),
+                taskName: $(".task-textarea").val()
+            };
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("AddTask", "Task")',
+                data: data,
+                success: function (data) {
+                    $(".add-task").attr("hidden", "");
+                    $(".tasks").append(
+                        '<div><input type="checkbox" name="taskStatus"/> <input type="text" name="taskId" value="' + data.TaskID + '" hidden/> <p>' + data.Name + '</p> <a href="#" class="delete-btn ml-auto"> <i class="fas fa-times"></i> </a></div>'
+                    );
+                }
+            });
+        });
+
+        $(".delete-card-btn").click(function () {
+            var data = {
+                cardId: $('#cardModal input[name="cardId"]').val()
+            };
+
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("DeleteCard", "Card")',
+                data: data,
+                success: function (data) {
+                }
+            })
+
+            $("#cardModal").modal("hide");
+        });
+
+        $(".delete-list-btn").click(function () {
+            var data = {
+                listId: $(this).parent().find('input[name="listId"]').val()
+            };
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("DeleteList", "List")',
+                data: data,
+                success: function () {
+                    location.reload();
+                }
+            });
+        });
+
+        $(".delete-board-btn").click(function () {
+            var data = {
+                boardId: $(this).parent().find('input[name="boardId"]').val()
+            };
+
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("DeleteBoard", "Board")',
+                data: data,
+                success: function () {
+                    var url = '@Url.Action("Index", "Home")';
+                    window.location.href = url;
+                }
+            });
+        });
+
+        $(".card-title h3").click(function () {
+            var input = $(this).parent().find('input[name="cardTitle"]');
+            input.removeAttr("hidden");
+            input.focus();
+            $(this).hide();
+        });
+
+        $('.card-title input[name="cardTitle"]').focusout(function () {
+            var input = $(this);
+            if ($(this).val() != "") {
+                var data = {
+                    cardId: $('#cardModal input[name="cardId"]').val(),
+                    cardTitle: $(this).val()
+                };
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("UpdateCardTitle", "Card")',
+                    data: data,
+                    success: function (data) {
+                        input.val("");
+                        input.parent().find("h3").html(data.cardTitle);
+                        input.parent().find("h3").show();
+                        input.attr("hidden", "");
+                    }
+                });
+            } else {
+                input.parent().find("h3").show();
+                input.attr("hidden", "");
+            };
+        });
+
+        $(".list-title h3").click(function () {
+            $(this).hide();
+            $(this).parent().find('input[name="listName"]').removeAttr("hidden");
+            $(this).parent().find('input[name="listName"]').focus();
+        });
+
+        $('.list-title input[name="listName"]').focusout(function () {
+            var input = $(this);
+            if ($(this).val() != "") {
+                var data = {
+                    listId: $(this).parent().find('input[name="listId"]').val(),
+                    listName: $(this).val()
+                };
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("UpdateListName", "List")',
+                    data: data,
+                    success: function (data) {
+                        input.val("");
+                        input.parent().find("h3").html(data.listName);
+                        input.parent().find("h3").show();
+                        input.attr("hidden", "");
+                    }
+                });
+            } else {
+                input.parent().find("h3").show();
+                input.attr("hidden", "");
+            };
+        });
+
+        $(".board-title").click(function () {
+            $(this).hide();
+            $(this).parent().find('input[name="boardName"]').removeAttr("hidden");
+            $(this).parent().find('input[name="boardName"]').focus();
+        });
+
+        $('.board-controls input[name="boardName"]').focusout(function () {
+            var input = $(this);
+            if ($(this).val() != "") {
+                var data = {
+                    boardId: $(this).parent().parent().find('input[name="boardId"]').val(),
+                    boardName: $(this).val()
+                };
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("UpdateBoardName", "Board")',
+                    data: data,
+                    success: function (data) {
+                        input.val("");
+                        input.parent().find("h2").html(data.boardName);
+                        input.parent().find(".board-title").show();
+                        input.attr("hidden", "");
+                    }
+                });
+            } else {
+                input.parent().find(".board-title").show();
+                input.attr("hidden", "");
+            };
+        });
+
+        $("#addListModal button").click(function () {
+            var listName = $('#addListModal input[name="listName"]').val();
+            var boardId = $('#addListModal input[name="boardId"]').val();
+            if (listName != "") {
+                var data = {
+                    boardId: boardId,
+                    listName: listName
+                };
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("CreateList", "List")',
+                    data: data,
+                    success: function () {
+                        window.location.reload();
+                    }
+                })
+            }
+        });
+
+        $("#addCardModal button").click(function () {
+            var listId = $('#addCardModal input[name="listId"]').val();
+            var cardTitle = $('#addCardModal input[name="cardTitle"]').val();
+            if (cardTitle != "") {
+                var data = {
+                    listId: listId,
+                    cardTitle: cardTitle
+                };
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("CreateCard", "Card")',
+                    data: data,
+                    success: function () {
+                        window.location.reload();
+                    }
+                })
+            }
+        });
+
+        $("#addCollabModal button").click(function () {
+            var input = $('#addCollabModal input[name="emailCollab"]');
+            if (isEmail(input.val())) {
+                var data = {
+                    email: input.val(),
+                    boardId: $('.board-info-bar input[name="boardId"]').val()
+                };
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("AddCollab", "Board")',
+                    data: data,
+                    success: function (data) {
+                        if ($.isEmptyObject(data))
+                            alert("Không tìm thấy email");
+                        else {
+                            console.log(data);
+                            if (data.res) {
+                                alert("Thêm thành công");
+                                $("#addCollabModal").modal("hide");
+                            } else alert("Thành viên đã có trong bảng");                             
+                        }
+                    }
+                });
+            } else {
+                alert("Email không hợp lệ");
+            }
+        });
+    });
+
+    $(function () {
+        var oldIndex;
+        $(".list-items").sortable({
+            connectWith: $(".list-items"),
+            start: function (event, ui) {
+                oldIndex = ui.item.index();
+            },
+            stop: function (event, ui) {
+                var newIndex = ui.item.index();
+                var newItem = $(ui.item);
+                var oldItem = $(newItem.parent().children().get(oldIndex));
+
+
+                console.log(oldItem, newItem);
+
+                var data = {
+                    cardIdA: oldItem.find('input[name="cardId"]').val(),
+                    cardIdB: newItem.find('input[name="cardId"]').val()
+                };
+                if (oldIndex != newIndex && $(this)[0] == newItem.parent()[0] && $(this)[0] == oldItem.parent()[0]) {
+                    $.ajax({
+                        type: "GET",
+                        url: '@Url.Action("SwapCardInsideList", "Card")',
+                        data: data,
+                        success: function (data) {
+                            var temp = oldItem.find('input[name="cardId"]').val();
+                            oldItem.find('input[name="cardId"]').val(newItem.find('input[name="cardId"]').val());
+                            newItem.find('input[name="cardId"]').val(temp);
+                        }
+                    });
+                }
+            },
+            receive: function (event, ui) {
+                var newItem = $(ui.item[0]);
+                var data = {
+                    cardId: newItem.find('input[name="cardId"]').val(),
+                    listId: newItem.parent().parent().find('input[name="listId"]').val()
+                };
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("SwapCardToList", "Card")',
+                    data: data,
+                    success: function (data) {
+                    }
+                });
+            }
+        });
+        $(".list").draggable({
+            scroll: true,
+            revert: true,
+            drag: function () {
+                $(this).css({
+                    "z-index": 20
+                });
+            }
+        });
+
+        $(".list").droppable({
+            accept: ".list",
+            drop: function (event, ui) {
+                var draggable = ui.draggable;
+                var droppable = $(this);
+                var dragPos = draggable.position();
+                var dropPos = droppable.position();
+
+                draggable.css({
+                    left: "0px",
+                    top: "0px",
+                    "z-index": 0
+                });
+
+                draggable.swap(droppable);
+                var data = {
+                    listIdA: draggable.find('input[name="listId"]').val(),
+                    listIdB: droppable.find('input[name="listId"]').val()
+                }
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("SwapList", "List")',
+                    data: data,
+                    success: function () {
+                        var temp = draggable.find('input[name="listId"]').val();
+                        draggable.find('input[name="listId"]').val(droppable.find('input[name="listId"]').val());
+                        droppable.find('input[name="listId"]').val(temp);
+                    }
+                });
+            }
+        });
+    });
+
+    jQuery.fn.swap = function (b) {
+        // method from: http://blog.pengoworks.com/index.cfm/2008/9/24/A-quick-and-dirty-swap-method-for-jQuery
+        b = jQuery(b)[0];
+        var a = this[0];
+        var t = a.parentNode.insertBefore(document.createTextNode(''), a);
+        b.parentNode.insertBefore(a, b);
+        t.parentNode.insertBefore(b, t);
+        t.parentNode.removeChild(t);
+        return this;
+    };
+
+    function isEmail(email) {
+        var regex = /^([a-zA-Z0-9_.+-])+\@@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+        return regex.test(email);
+    }
+
+    $(document).on('click', '.tasks .delete-btn', function () {
+        var data = {
+            taskId: $(this).parent().find('input[name="taskId"]').val()
+        };
+
+        var task = $(this).parent();
+
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("DeleteTask", "Task")',
+            data: data,
+            success: function () {
+                task.remove();
+            },
+            error: function () {
+                console.log("a");
+            }
+        });
+    });
+
+    $(document).on('click', '.tasks div p', function () {
+        $(this).parent().find('input[name="taskName"]').removeAttr("hidden");
+        $(this).parent().find('input[name="taskName"]').focus();
+        $(this).hide();
+    });
+
+    $(document).on('focusout', '.tasks input[name="taskName"]', function () {
+        var input = $(this);
+        if ($(this).val() != "") {
+            var data = {
+                taskId: $(this).parent().find('input[name="taskId"]').val(),
+                taskName: $(this).val()
+            };
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("UpdateTaskName", "Task")',
+                data: data,
+                success: function (data) {
+                    input.parent().find("p").html(data.taskName);
+                    input.parent().find("p").show();
+                    input.attr("hidden", "");
+                    input.val("");
+                }
+            });
+        } else {
+            input.parent().find("p").show();
+            input.attr("hidden", "");
+        };
+    });
+
+    $(document).on('change', '.tasks input[name="taskStatus"]', function () {
+        if ($(this).is(':checked')) {
+            var data = {
+                taskId: $(this).parent().find('input[name="taskId"]').val(),
+                status: true
+            };
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("UpdateStatus", "Task")',
+                data: data,
+                success: function (data) {
+                    console.log(data);
+                },
+                error: function () {
+                    console.log("error");
+                }
+            });
+        } else {
+            var data = {
+                taskId: $(this).parent().find('input[name="taskId"]').val(),
+                status: false
+            };
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("UpdateStatus", "Task")',
+                data: data,
+                success: function (data) {
+                    console.log(data);
+                },
+                error: function () {
+                    console.log("error");
+                }
+            });
+        };
+    });
+</script>

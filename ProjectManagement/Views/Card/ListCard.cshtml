@@ -1,0 +1,20 @@
+﻿
+@{
+    Layout = null;
+}
+
+@model List<ProjectManagement.Models.sp_GetAllCardByListId_Result>
+
+@foreach (var card in Model)
+{   
+<li class="card">
+    @{
+        DateTime expiry = card.ExpiryDay ?? DateTime.Now;
+    }
+    <input type="text" class="card-desc" name="cardDesc" value="@card.Description" hidden />
+    <input type="text" class="card-id" name="cardId" value="@card.CardID" hidden />
+    <input type="text" class="card-tag" name="cardTag" value="@card.Tag" hidden />
+    <input type="date" class="card-expiry" name="cardExpiry" value="@expiry.ToString("yyyy-MM-dd")" hidden/>
+    @card.Title
+</li>
+}

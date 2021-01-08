@@ -1,0 +1,157 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+    Layout = null;
+}
+
+@model dynamic
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" type="text/css" href="~/styles/css/Home/board.css" />
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="~/styles/vendor/bootstrap/css/bootstrap.min.css">
+    <script src="~/styles/vendor/jquery/jquery-3.2.1.min.js"></script>
+    <script src="~/styles/vendor/bootstrap/js/popper.js"></script>
+    <script src="~/styles/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/styles/vendor/tilt/tilt.jquery.min.js"></script>
+    <script src="https://kit.fontawesome.com/2c807ed367.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+</head>
+<body>
+    <div class="wrapper">
+        <header class="masthead">
+            <div class="boards-menu">
+                <button class="boards-btn button"><i class="fab fa-trello boards-btn-icon"></i>Boards</button>
+                <!--
+                <div class="board-search">
+                    <input type="search" class="board-search-input" aria-label="Board Search">
+                    <i class="fas fa-search search-icon" aria-hidden="true"></i>
+                </div>
+                -->
+            </div>
+            <div class="logo">
+                <h1><i class="fab fa-trello logo-icon" aria-hidden="true"></i></h1>
+            </div>
+            <div class="user-settings">
+                <div class="user-settings-btn button" aria-label="Information">
+                    <i class="fas fa-info-circle" aria-hidden="true"></i>
+                </div>
+                <div class="user-settings-btn button" aria-label="Notifications">
+                    <i class="fas fa-bell" aria-hidden="true"></i>
+                </div>
+                <div class="user-settings-btn button" aria-label="User Settings">
+                    <i class="fas fa-user-circle" aria-hidden="true"></i>
+                    <div>
+                        <a class="logout-btn" href="@Url.Action("Logout", "Account")">Đăng xuất</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="container">
+            <div class="sidebar-container">
+                <!--<nav class="sidebar">
+                    <div>
+                        <ul>
+                            <li>
+                                <a href="#">Bảng</a>
+                            </li>
+                            <li>
+                                <a href="#">Trang chủ</a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav> -->
+            </div>
+            <div class="page-content-container">
+                <div class="board-container">
+                    <div class="board-header">
+                        <h3>Bảng cá nhân</h3>
+                    </div>
+                    <div class="board-content">
+                        <ul class="board-list">
+                            <li class="board-item">
+                                <div class="board-tile mod-add">
+                                    Tạo bảng mới
+                                </div>
+                            </li>
+                            @foreach (var board in Model.PersonalBoard)
+                            {
+                                <li class="board-item">
+                                    <div class="board-tile board">
+                                        <form method="post" action="@Url.Action("OnBoard", "Board")">
+                                            <input type="text" name="boardId" value="@board.BoardID" hidden />
+                                            @board.Name
+                                        </form>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                    <div class="board-header">
+                        <h3>Bảng nhóm</h3>
+                    </div>
+                    <div class="board-content">
+                        <ul class="board-list">
+                            @foreach (var board in Model.TeamBoard)
+                            {
+                                <li class="board-item">
+                                    <div class="board-tile board">
+                                        <form method="post" action="@Url.Action("OnBoard", "Board")">
+                                            <input type="text" name="boardId" value="@board.BoardID" hidden />
+                                            @board.Name
+                                        </form>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" id="addModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <form class="field" method="post" action="@Url.Action("CreateBoard", "Home")">
+                        <div class="modal-body">
+                            <input type="text" class="form-control" name="boardName" placeholder="Nhập tên bảng" />
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary" disabled="disabled">Tạo bảng</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script>
+    $(document).ready(function () {
+        $(".mod-add").click(function () {
+            $("#addModal").modal("show");
+        });
+        $(".field").keyup(function () {
+            let empty = false;
+
+            $(".field input").each(function () {
+                empty = $(this).val().length == 0;
+            });
+
+            if (empty)
+                $(".modal-footer button").attr("disabled", "disabled");
+            else
+                $(".modal-footer button").attr("disabled", false);
+        });
+        $(".board").click(function () {
+            $(this).find("form").submit();
+        });
+        $(".logout-btn").confirm();
+    });
+</script>

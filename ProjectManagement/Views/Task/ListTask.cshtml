@@ -1,0 +1,28 @@
+﻿
+@{
+    Layout = null;
+}
+
+@model List<ProjectManagement.Models.sp_GetAllTaskByCardId_Result>
+
+@foreach (var task in Model)
+{
+<div>
+    @{
+        if (task.Status)
+        {
+            <input type="checkbox" name="taskStatus" checked />
+        }
+        else
+        {
+            <input type="checkbox" name="taskStatus" />
+        }
+    }
+    <input type="text" name="taskId" value="@task.TaskID" hidden />
+    <p>@task.Name</p>
+    <input class="text-edit" type="text" name="taskName" hidden style="margin-left: 10px"/>
+    <a href="#" class="delete-btn ml-auto">
+        <i class="fas fa-times"></i>
+    </a>
+</div>
+}

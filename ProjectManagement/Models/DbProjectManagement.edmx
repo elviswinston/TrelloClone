@@ -1,0 +1,876 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="ProjectManagementModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Account">
+          <Key>
+            <PropertyRef Name="AccountID" />
+          </Key>
+          <Property Name="AccountID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Email" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="Password" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="255" />
+        </EntityType>
+        <EntityType Name="Board">
+          <Key>
+            <PropertyRef Name="BoardID" />
+          </Key>
+          <Property Name="BoardID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="255" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Card">
+          <Key>
+            <PropertyRef Name="CardID" />
+          </Key>
+          <Property Name="CardID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Title" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="255" />
+          <Property Name="Tag" Type="nvarchar" MaxLength="255" />
+          <Property Name="ExpiryDay" Type="datetime" />
+          <Property Name="ListID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="List">
+          <Key>
+            <PropertyRef Name="ListID" />
+          </Key>
+          <Property Name="ListID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ListName" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="BoardID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Project">
+          <Key>
+            <PropertyRef Name="ProjectID" />
+          </Key>
+          <Property Name="ProjectID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="AccountID" Type="int" Nullable="false" />
+          <Property Name="BoardID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Task">
+          <Key>
+            <PropertyRef Name="TaskID" />
+          </Key>
+          <Property Name="TaskID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Status" Type="bit" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="255" />
+          <Property Name="CardID" Type="int" Nullable="false" />
+        </EntityType>
+        <Association Name="FK__Card__ListID__3587F3E0">
+          <End Role="List" Type="Self.List" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Card" Type="Self.Card" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="List">
+              <PropertyRef Name="ListID" />
+            </Principal>
+            <Dependent Role="Card">
+              <PropertyRef Name="ListID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__List__BoardID__2FCF1A8A">
+          <End Role="Board" Type="Self.Board" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="List" Type="Self.List" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Board">
+              <PropertyRef Name="BoardID" />
+            </Principal>
+            <Dependent Role="List">
+              <PropertyRef Name="BoardID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Project__Account__1332DBDC">
+          <End Role="Account" Type="Self.Account" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Project" Type="Self.Project" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="AccountID" />
+            </Principal>
+            <Dependent Role="Project">
+              <PropertyRef Name="AccountID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Project__BoardID__14270015">
+          <End Role="Board" Type="Self.Board" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Project" Type="Self.Project" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Board">
+              <PropertyRef Name="BoardID" />
+            </Principal>
+            <Dependent Role="Project">
+              <PropertyRef Name="BoardID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Task__CardID__395884C4">
+          <End Role="Card" Type="Self.Card" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Task" Type="Self.Task" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Card">
+              <PropertyRef Name="CardID" />
+            </Principal>
+            <Dependent Role="Task">
+              <PropertyRef Name="CardID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="func_AccountLogin" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="bit">
+          <Parameter Name="email" Type="varchar" Mode="In" />
+          <Parameter Name="password" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="sp_AddTask" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="cardId" Type="int" Mode="In" />
+          <Parameter Name="taskName" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="sp_CreateBoard" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="boardName" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="sp_CreateCard" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="title" Type="nvarchar" Mode="In" />
+          <Parameter Name="listId" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_CreateList" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="name" Type="nvarchar" Mode="In" />
+          <Parameter Name="boardId" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_CreateProject" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="accountId" Type="int" Mode="In" />
+          <Parameter Name="boardId" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_DeleteBoard" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="boardId" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_DeleteCard" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="cardId" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_DeleteList" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="listId" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_DeleteTask" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="taskId" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_GetAccount" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="sp_GetAccountByEmail" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="email" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="sp_GetAllCardByListId" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="listId" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_GetAllListByBoardID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="boardId" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_GetAllTaskByCardId" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="cardId" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_GetBoard" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="sp_GetBoardById" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="boardId" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_GetBoardByName" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="boardName" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="sp_GetBoardByUser" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="accountId" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_GetCardById" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="cardId" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_GetPersonalBoard" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="accountId" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_GetTaskById" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="taskId" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_GetTeamBoard" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="accountId" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_RegisterAccount" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="email" Type="varchar" Mode="In" />
+          <Parameter Name="password" Type="varchar" Mode="In" />
+          <Parameter Name="name" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="sp_SwapCardInsideList" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="cardIdA" Type="int" Mode="In" />
+          <Parameter Name="cardIdB" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_SwapCardToList" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="cardId" Type="int" Mode="In" />
+          <Parameter Name="listId" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_SwapList" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="listIdA" Type="int" Mode="In" />
+          <Parameter Name="listIdB" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_UpdateAccountName" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="accountId" Type="int" Mode="In" />
+          <Parameter Name="accountName" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="sp_UpdateAccountPassword" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="accountId" Type="int" Mode="In" />
+          <Parameter Name="accountPassword" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="sp_UpdateBoardName" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="boardId" Type="int" Mode="In" />
+          <Parameter Name="boardName" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="sp_UpdateCardDescription" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="cardId" Type="int" Mode="In" />
+          <Parameter Name="desc" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="sp_UpdateCardExpiry" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="cardId" Type="int" Mode="In" />
+          <Parameter Name="expiry" Type="datetime" Mode="In" />
+        </Function>
+        <Function Name="sp_UpdateCardTag" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="cardId" Type="int" Mode="In" />
+          <Parameter Name="tag" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="sp_UpdateCardTitle" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="cardId" Type="int" Mode="In" />
+          <Parameter Name="cardTitle" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="sp_UpdateListName" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="listId" Type="int" Mode="In" />
+          <Parameter Name="listName" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="sp_UpdateStatusOffTask" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="taskId" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_UpdateStatusOnTask" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="taskId" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_UpdateStatusTask" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="taskId" Type="int" Mode="In" />
+          <Parameter Name="status" Type="bit" Mode="In" />
+        </Function>
+        <Function Name="sp_UpdateTaskName" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="taskId" Type="int" Mode="In" />
+          <Parameter Name="taskName" Type="nvarchar" Mode="In" />
+        </Function>
+        <EntityContainer Name="ProjectManagementModelStoreContainer">
+          <EntitySet Name="Account" EntityType="Self.Account" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Board" EntityType="Self.Board" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Card" EntityType="Self.Card" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="List" EntityType="Self.List" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Project" EntityType="Self.Project" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Task" EntityType="Self.Task" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK__Card__ListID__3587F3E0" Association="Self.FK__Card__ListID__3587F3E0">
+            <End Role="List" EntitySet="List" />
+            <End Role="Card" EntitySet="Card" />
+          </AssociationSet>
+          <AssociationSet Name="FK__List__BoardID__2FCF1A8A" Association="Self.FK__List__BoardID__2FCF1A8A">
+            <End Role="Board" EntitySet="Board" />
+            <End Role="List" EntitySet="List" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Project__Account__1332DBDC" Association="Self.FK__Project__Account__1332DBDC">
+            <End Role="Account" EntitySet="Account" />
+            <End Role="Project" EntitySet="Project" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Project__BoardID__14270015" Association="Self.FK__Project__BoardID__14270015">
+            <End Role="Board" EntitySet="Board" />
+            <End Role="Project" EntitySet="Project" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Task__CardID__395884C4" Association="Self.FK__Task__CardID__395884C4">
+            <End Role="Card" EntitySet="Card" />
+            <End Role="Task" EntitySet="Task" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="ProjectManagementModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Account">
+          <Key>
+            <PropertyRef Name="AccountID" />
+          </Key>
+          <Property Name="AccountID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Email" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Password" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Projects" Relationship="Self.FK__Project__Account__1332DBDC" FromRole="Account" ToRole="Project" />
+        </EntityType>
+        <EntityType Name="Board">
+          <Key>
+            <PropertyRef Name="BoardID" />
+          </Key>
+          <Property Name="BoardID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Lists" Relationship="Self.FK__List__BoardID__2FCF1A8A" FromRole="Board" ToRole="List" />
+          <NavigationProperty Name="Projects" Relationship="Self.FK__Project__BoardID__14270015" FromRole="Board" ToRole="Project" />
+        </EntityType>
+        <EntityType Name="Card">
+          <Key>
+            <PropertyRef Name="CardID" />
+          </Key>
+          <Property Name="CardID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Title" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="Tag" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="ExpiryDay" Type="DateTime" Precision="3" />
+          <Property Name="ListID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="List" Relationship="Self.FK__Card__ListID__3587F3E0" FromRole="Card" ToRole="List" />
+          <NavigationProperty Name="Tasks" Relationship="Self.FK__Task__CardID__395884C4" FromRole="Card" ToRole="Task" />
+        </EntityType>
+        <EntityType Name="List">
+          <Key>
+            <PropertyRef Name="ListID" />
+          </Key>
+          <Property Name="ListID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ListName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="BoardID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Board" Relationship="Self.FK__List__BoardID__2FCF1A8A" FromRole="List" ToRole="Board" />
+          <NavigationProperty Name="Cards" Relationship="Self.FK__Card__ListID__3587F3E0" FromRole="List" ToRole="Card" />
+        </EntityType>
+        <EntityType Name="Project">
+          <Key>
+            <PropertyRef Name="ProjectID" />
+          </Key>
+          <Property Name="ProjectID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AccountID" Type="Int32" Nullable="false" />
+          <Property Name="BoardID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Account" Relationship="Self.FK__Project__Account__1332DBDC" FromRole="Project" ToRole="Account" />
+          <NavigationProperty Name="Board" Relationship="Self.FK__Project__BoardID__14270015" FromRole="Project" ToRole="Board" />
+        </EntityType>
+        <EntityType Name="Task">
+          <Key>
+            <PropertyRef Name="TaskID" />
+          </Key>
+          <Property Name="TaskID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Status" Type="Boolean" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="CardID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Card" Relationship="Self.FK__Task__CardID__395884C4" FromRole="Task" ToRole="Card" />
+        </EntityType>
+        <Association Name="FK__Project__Account__1332DBDC">
+          <End Role="Account" Type="Self.Account" Multiplicity="1" />
+          <End Role="Project" Type="Self.Project" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="AccountID" />
+            </Principal>
+            <Dependent Role="Project">
+              <PropertyRef Name="AccountID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__List__BoardID__2FCF1A8A">
+          <End Role="Board" Type="Self.Board" Multiplicity="1" />
+          <End Role="List" Type="Self.List" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Board">
+              <PropertyRef Name="BoardID" />
+            </Principal>
+            <Dependent Role="List">
+              <PropertyRef Name="BoardID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Project__BoardID__14270015">
+          <End Role="Board" Type="Self.Board" Multiplicity="1" />
+          <End Role="Project" Type="Self.Project" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Board">
+              <PropertyRef Name="BoardID" />
+            </Principal>
+            <Dependent Role="Project">
+              <PropertyRef Name="BoardID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Card__ListID__3587F3E0">
+          <End Role="List" Type="Self.List" Multiplicity="1" />
+          <End Role="Card" Type="Self.Card" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="List">
+              <PropertyRef Name="ListID" />
+            </Principal>
+            <Dependent Role="Card">
+              <PropertyRef Name="ListID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Task__CardID__395884C4">
+          <End Role="Card" Type="Self.Card" Multiplicity="1" />
+          <End Role="Task" Type="Self.Task" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Card">
+              <PropertyRef Name="CardID" />
+            </Principal>
+            <Dependent Role="Task">
+              <PropertyRef Name="CardID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="DbProjectManagement" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Accounts" EntityType="Self.Account" />
+          <EntitySet Name="Boards" EntityType="Self.Board" />
+          <EntitySet Name="Cards" EntityType="Self.Card" />
+          <EntitySet Name="Lists" EntityType="Self.List" />
+          <EntitySet Name="Projects" EntityType="Self.Project" />
+          <EntitySet Name="Tasks" EntityType="Self.Task" />
+          <AssociationSet Name="FK__Project__Account__1332DBDC" Association="Self.FK__Project__Account__1332DBDC">
+            <End Role="Account" EntitySet="Accounts" />
+            <End Role="Project" EntitySet="Projects" />
+          </AssociationSet>
+          <AssociationSet Name="FK__List__BoardID__2FCF1A8A" Association="Self.FK__List__BoardID__2FCF1A8A">
+            <End Role="Board" EntitySet="Boards" />
+            <End Role="List" EntitySet="Lists" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Project__BoardID__14270015" Association="Self.FK__Project__BoardID__14270015">
+            <End Role="Board" EntitySet="Boards" />
+            <End Role="Project" EntitySet="Projects" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Card__ListID__3587F3E0" Association="Self.FK__Card__ListID__3587F3E0">
+            <End Role="List" EntitySet="Lists" />
+            <End Role="Card" EntitySet="Cards" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Task__CardID__395884C4" Association="Self.FK__Task__CardID__395884C4">
+            <End Role="Card" EntitySet="Cards" />
+            <End Role="Task" EntitySet="Tasks" />
+          </AssociationSet>
+          <FunctionImport Name="sp_CreateList">
+            <Parameter Name="name" Mode="In" Type="String" />
+            <Parameter Name="boardId" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_GetAccount" ReturnType="Collection(ProjectManagementModel.sp_GetAccount_Result)" />
+          <FunctionImport Name="sp_GetAccountByEmail" ReturnType="Collection(ProjectManagementModel.sp_GetAccountByEmail_Result)">
+          <Parameter Name="email" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="sp_GetAllListByBoardID" ReturnType="Collection(ProjectManagementModel.sp_GetAllListByBoardID_Result)">
+          <Parameter Name="boardId" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_GetBoard" ReturnType="Collection(ProjectManagementModel.sp_GetBoard_Result)" />
+          <FunctionImport Name="sp_GetBoardByName" ReturnType="Collection(ProjectManagementModel.sp_GetBoardByName_Result)">
+          <Parameter Name="boardName" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="sp_GetBoardByUser" ReturnType="Collection(ProjectManagementModel.sp_GetBoardByUser_Result)">
+          <Parameter Name="accountId" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_CreateCard">
+            <Parameter Name="title" Mode="In" Type="String" />
+            <Parameter Name="listId" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_GetAllCardByListId" ReturnType="Collection(ProjectManagementModel.sp_GetAllCardByListId_Result)">
+          <Parameter Name="listId" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_GetBoardById" ReturnType="Collection(ProjectManagementModel.sp_GetBoardById_Result)">
+          <Parameter Name="boardId" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_CreateBoard" ReturnType="Collection(Decimal)">
+          <Parameter Name="boardName" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="sp_UpdateCardDescription">
+            <Parameter Name="cardId" Mode="In" Type="Int32" />
+            <Parameter Name="desc" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="sp_GetCardById" ReturnType="Collection(ProjectManagementModel.sp_GetCardById_Result)">
+          <Parameter Name="cardId" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_UpdateCardTag">
+            <Parameter Name="cardId" Mode="In" Type="Int32" />
+            <Parameter Name="tag" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="sp_UpdateCardExpiry">
+            <Parameter Name="cardId" Mode="In" Type="Int32" />
+            <Parameter Name="expiry" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="sp_GetAllTaskByCardId" ReturnType="Collection(ProjectManagementModel.sp_GetAllTaskByCardId_Result)">
+          <Parameter Name="cardId" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_AddTask" ReturnType="Collection(Decimal)">
+            <Parameter Name="cardId" Mode="In" Type="Int32" />
+            <Parameter Name="taskName" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="sp_GetTaskById" ReturnType="Collection(ProjectManagementModel.sp_GetTaskById_Result)">
+          <Parameter Name="taskId" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_DeleteTask">
+          <Parameter Name="taskId" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_UpdateStatusTask">
+            <Parameter Name="taskId" Mode="In" Type="Int32" />
+            <Parameter Name="status" Mode="In" Type="Boolean" />
+          </FunctionImport>
+          <FunctionImport Name="sp_UpdateStatusOnTask">
+          <Parameter Name="taskId" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_UpdateStatusOffTask">
+          <Parameter Name="taskId" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_DeleteCard">
+          <Parameter Name="cardId" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_DeleteList">
+          <Parameter Name="listId" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_DeleteBoard">
+          <Parameter Name="boardId" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_UpdateTaskName">
+            <Parameter Name="taskId" Mode="In" Type="Int32" />
+            <Parameter Name="taskName" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="sp_UpdateCardTitle">
+            <Parameter Name="cardId" Mode="In" Type="Int32" />
+            <Parameter Name="cardTitle" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="sp_UpdateBoardName">
+            <Parameter Name="boardId" Mode="In" Type="Int32" />
+            <Parameter Name="boardName" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="sp_UpdateListName">
+            <Parameter Name="listId" Mode="In" Type="Int32" />
+            <Parameter Name="listName" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="sp_UpdateAccountName">
+            <Parameter Name="accountId" Mode="In" Type="Int32" />
+            <Parameter Name="accountName" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="sp_UpdateAccountPassword">
+            <Parameter Name="accountId" Mode="In" Type="Int32" />
+            <Parameter Name="accountPassword" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="sp_GetPersonalBoard" ReturnType="Collection(ProjectManagementModel.sp_GetPersonalBoard_Result)">
+          <Parameter Name="accountId" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_GetTeamBoard" ReturnType="Collection(ProjectManagementModel.sp_GetTeamBoard_Result)">
+          <Parameter Name="accountId" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_SwapList">
+            <Parameter Name="listIdA" Mode="In" Type="Int32" />
+            <Parameter Name="listIdB" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_SwapCardInsideList">
+            <Parameter Name="cardIdA" Mode="In" Type="Int32" />
+            <Parameter Name="cardIdB" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_SwapCardToList">
+            <Parameter Name="cardId" Mode="In" Type="Int32" />
+            <Parameter Name="listId" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_RegisterAccount" ReturnType="Collection(Boolean)">
+            <Parameter Name="email" Mode="In" Type="String" />
+            <Parameter Name="password" Mode="In" Type="String" />
+            <Parameter Name="name" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="sp_CreateProject" ReturnType="Collection(Boolean)">
+            <Parameter Name="accountId" Mode="In" Type="Int32" />
+            <Parameter Name="boardId" Mode="In" Type="Int32" />
+          </FunctionImport>
+        </EntityContainer>
+        <ComplexType Name="sp_GetAccount_Result">
+          <Property Type="Int32" Name="AccountID" Nullable="false" />
+          <Property Type="String" Name="Email" Nullable="false" MaxLength="255" />
+          <Property Type="String" Name="Password" Nullable="false" MaxLength="255" />
+          <Property Type="String" Name="Name" Nullable="true" MaxLength="255" />
+        </ComplexType>
+        <ComplexType Name="sp_GetAccountByEmail_Result">
+          <Property Type="Int32" Name="AccountID" Nullable="false" />
+          <Property Type="String" Name="Email" Nullable="false" MaxLength="255" />
+          <Property Type="String" Name="Password" Nullable="false" MaxLength="255" />
+          <Property Type="String" Name="Name" Nullable="true" MaxLength="255" />
+        </ComplexType>
+        <ComplexType Name="sp_GetAllListByBoardID_Result">
+          <Property Type="Int32" Name="ListID" Nullable="false" />
+          <Property Type="String" Name="ListName" Nullable="false" MaxLength="255" />
+          <Property Type="Int32" Name="BoardID" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="sp_GetBoard_Result">
+          <Property Type="Int32" Name="BoardID" Nullable="false" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="255" />
+        </ComplexType>
+        <ComplexType Name="sp_GetBoardByName_Result">
+          <Property Type="Int32" Name="BoardID" Nullable="false" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="255" />
+        </ComplexType>
+        <ComplexType Name="sp_GetBoardByUser_Result">
+          <Property Type="Int32" Name="BoardID" Nullable="false" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="255" />
+        </ComplexType>
+        <ComplexType Name="sp_GetAllCardByListId_Result">
+          <Property Type="Int32" Name="CardID" Nullable="false" />
+          <Property Type="String" Name="Title" Nullable="false" MaxLength="255" />
+          <Property Type="String" Name="Description" Nullable="true" MaxLength="255" />
+          <Property Type="String" Name="Tag" Nullable="true" MaxLength="255" />
+          <Property Type="DateTime" Name="ExpiryDay" Nullable="true" Precision="23" />
+          <Property Type="Int32" Name="ListID" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="sp_GetBoardById_Result">
+          <Property Type="Int32" Name="BoardID" Nullable="false" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="255" />
+        </ComplexType>
+        <ComplexType Name="sp_GetCardById_Result">
+          <Property Type="Int32" Name="CardID" Nullable="false" />
+          <Property Type="String" Name="Title" Nullable="false" MaxLength="255" />
+          <Property Type="String" Name="Description" Nullable="true" MaxLength="255" />
+          <Property Type="String" Name="Tag" Nullable="true" MaxLength="255" />
+          <Property Type="DateTime" Name="ExpiryDay" Nullable="true" Precision="23" />
+          <Property Type="Int32" Name="ListID" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="sp_GetAllTaskByCardId_Result">
+          <Property Type="Int32" Name="TaskID" Nullable="false" />
+          <Property Type="Boolean" Name="Status" Nullable="false" />
+          <Property Type="String" Name="Name" Nullable="true" MaxLength="255" />
+          <Property Type="Int32" Name="CardID" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="sp_GetTaskById_Result">
+          <Property Type="Int32" Name="TaskID" Nullable="false" />
+          <Property Type="Boolean" Name="Status" Nullable="false" />
+          <Property Type="String" Name="Name" Nullable="true" MaxLength="255" />
+          <Property Type="Int32" Name="CardID" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="sp_GetPersonalBoard_Result">
+          <Property Type="Int32" Name="BoardID" Nullable="false" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="255" />
+        </ComplexType>
+        <ComplexType Name="sp_GetTeamBoard_Result">
+          <Property Type="Int32" Name="BoardID" Nullable="false" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="255" />
+        </ComplexType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="ProjectManagementModelStoreContainer" CdmEntityContainer="DbProjectManagement">
+          <EntitySetMapping Name="Accounts">
+            <EntityTypeMapping TypeName="ProjectManagementModel.Account">
+              <MappingFragment StoreEntitySet="Account">
+                <ScalarProperty Name="AccountID" ColumnName="AccountID" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Boards">
+            <EntityTypeMapping TypeName="ProjectManagementModel.Board">
+              <MappingFragment StoreEntitySet="Board">
+                <ScalarProperty Name="BoardID" ColumnName="BoardID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Cards">
+            <EntityTypeMapping TypeName="ProjectManagementModel.Card">
+              <MappingFragment StoreEntitySet="Card">
+                <ScalarProperty Name="CardID" ColumnName="CardID" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Tag" ColumnName="Tag" />
+                <ScalarProperty Name="ExpiryDay" ColumnName="ExpiryDay" />
+                <ScalarProperty Name="ListID" ColumnName="ListID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Lists">
+            <EntityTypeMapping TypeName="ProjectManagementModel.List">
+              <MappingFragment StoreEntitySet="List">
+                <ScalarProperty Name="ListID" ColumnName="ListID" />
+                <ScalarProperty Name="ListName" ColumnName="ListName" />
+                <ScalarProperty Name="BoardID" ColumnName="BoardID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Projects">
+            <EntityTypeMapping TypeName="ProjectManagementModel.Project">
+              <MappingFragment StoreEntitySet="Project">
+                <ScalarProperty Name="ProjectID" ColumnName="ProjectID" />
+                <ScalarProperty Name="AccountID" ColumnName="AccountID" />
+                <ScalarProperty Name="BoardID" ColumnName="BoardID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Tasks">
+            <EntityTypeMapping TypeName="ProjectManagementModel.Task">
+              <MappingFragment StoreEntitySet="Task">
+                <ScalarProperty Name="TaskID" ColumnName="TaskID" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="CardID" ColumnName="CardID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="sp_CreateList" FunctionName="ProjectManagementModel.Store.sp_CreateList" />
+          <FunctionImportMapping FunctionImportName="sp_GetAccount" FunctionName="ProjectManagementModel.Store.sp_GetAccount">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="ProjectManagementModel.sp_GetAccount_Result">
+                <ScalarProperty Name="AccountID" ColumnName="AccountID" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="sp_GetAccountByEmail" FunctionName="ProjectManagementModel.Store.sp_GetAccountByEmail">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="ProjectManagementModel.sp_GetAccountByEmail_Result">
+                <ScalarProperty Name="AccountID" ColumnName="AccountID" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="sp_GetAllListByBoardID" FunctionName="ProjectManagementModel.Store.sp_GetAllListByBoardID">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="ProjectManagementModel.sp_GetAllListByBoardID_Result">
+                <ScalarProperty Name="ListID" ColumnName="ListID" />
+                <ScalarProperty Name="ListName" ColumnName="ListName" />
+                <ScalarProperty Name="BoardID" ColumnName="BoardID" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="sp_GetBoard" FunctionName="ProjectManagementModel.Store.sp_GetBoard">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="ProjectManagementModel.sp_GetBoard_Result">
+                <ScalarProperty Name="BoardID" ColumnName="BoardID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="sp_GetBoardByName" FunctionName="ProjectManagementModel.Store.sp_GetBoardByName">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="ProjectManagementModel.sp_GetBoardByName_Result">
+                <ScalarProperty Name="BoardID" ColumnName="BoardID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="sp_GetBoardByUser" FunctionName="ProjectManagementModel.Store.sp_GetBoardByUser">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="ProjectManagementModel.sp_GetBoardByUser_Result">
+                <ScalarProperty Name="BoardID" ColumnName="BoardID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="sp_CreateCard" FunctionName="ProjectManagementModel.Store.sp_CreateCard" />
+          <FunctionImportMapping FunctionImportName="sp_GetAllCardByListId" FunctionName="ProjectManagementModel.Store.sp_GetAllCardByListId">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="ProjectManagementModel.sp_GetAllCardByListId_Result">
+                <ScalarProperty Name="CardID" ColumnName="CardID" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Tag" ColumnName="Tag" />
+                <ScalarProperty Name="ExpiryDay" ColumnName="ExpiryDay" />
+                <ScalarProperty Name="ListID" ColumnName="ListID" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="sp_GetBoardById" FunctionName="ProjectManagementModel.Store.sp_GetBoardById">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="ProjectManagementModel.sp_GetBoardById_Result">
+                <ScalarProperty Name="BoardID" ColumnName="BoardID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="sp_CreateBoard" FunctionName="ProjectManagementModel.Store.sp_CreateBoard" />
+          <FunctionImportMapping FunctionImportName="sp_UpdateCardDescription" FunctionName="ProjectManagementModel.Store.sp_UpdateCardDescription" />
+          <FunctionImportMapping FunctionImportName="sp_GetCardById" FunctionName="ProjectManagementModel.Store.sp_GetCardById">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="ProjectManagementModel.sp_GetCardById_Result">
+                <ScalarProperty Name="CardID" ColumnName="CardID" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Tag" ColumnName="Tag" />
+                <ScalarProperty Name="ExpiryDay" ColumnName="ExpiryDay" />
+                <ScalarProperty Name="ListID" ColumnName="ListID" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="sp_UpdateCardTag" FunctionName="ProjectManagementModel.Store.sp_UpdateCardTag" />
+          <FunctionImportMapping FunctionImportName="sp_UpdateCardExpiry" FunctionName="ProjectManagementModel.Store.sp_UpdateCardExpiry" />
+          <FunctionImportMapping FunctionImportName="sp_GetAllTaskByCardId" FunctionName="ProjectManagementModel.Store.sp_GetAllTaskByCardId">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="ProjectManagementModel.sp_GetAllTaskByCardId_Result">
+                <ScalarProperty Name="TaskID" ColumnName="TaskID" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="CardID" ColumnName="CardID" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="sp_AddTask" FunctionName="ProjectManagementModel.Store.sp_AddTask" />
+          <FunctionImportMapping FunctionImportName="sp_GetTaskById" FunctionName="ProjectManagementModel.Store.sp_GetTaskById">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="ProjectManagementModel.sp_GetTaskById_Result">
+                <ScalarProperty Name="TaskID" ColumnName="TaskID" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="CardID" ColumnName="CardID" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="sp_DeleteTask" FunctionName="ProjectManagementModel.Store.sp_DeleteTask" />
+          <FunctionImportMapping FunctionImportName="sp_UpdateStatusTask" FunctionName="ProjectManagementModel.Store.sp_UpdateStatusTask" />
+          <FunctionImportMapping FunctionImportName="sp_UpdateStatusOnTask" FunctionName="ProjectManagementModel.Store.sp_UpdateStatusOnTask" />
+          <FunctionImportMapping FunctionImportName="sp_UpdateStatusOffTask" FunctionName="ProjectManagementModel.Store.sp_UpdateStatusOffTask" />
+          <FunctionImportMapping FunctionImportName="sp_DeleteCard" FunctionName="ProjectManagementModel.Store.sp_DeleteCard" />
+          <FunctionImportMapping FunctionImportName="sp_DeleteList" FunctionName="ProjectManagementModel.Store.sp_DeleteList" />
+          <FunctionImportMapping FunctionImportName="sp_DeleteBoard" FunctionName="ProjectManagementModel.Store.sp_DeleteBoard" />
+          <FunctionImportMapping FunctionImportName="sp_UpdateTaskName" FunctionName="ProjectManagementModel.Store.sp_UpdateTaskName" />
+          <FunctionImportMapping FunctionImportName="sp_UpdateCardTitle" FunctionName="ProjectManagementModel.Store.sp_UpdateCardTitle" />
+          <FunctionImportMapping FunctionImportName="sp_UpdateBoardName" FunctionName="ProjectManagementModel.Store.sp_UpdateBoardName" />
+          <FunctionImportMapping FunctionImportName="sp_UpdateListName" FunctionName="ProjectManagementModel.Store.sp_UpdateListName" />
+          <FunctionImportMapping FunctionImportName="sp_UpdateAccountName" FunctionName="ProjectManagementModel.Store.sp_UpdateAccountName" />
+          <FunctionImportMapping FunctionImportName="sp_UpdateAccountPassword" FunctionName="ProjectManagementModel.Store.sp_UpdateAccountPassword" />
+          <FunctionImportMapping FunctionImportName="sp_GetPersonalBoard" FunctionName="ProjectManagementModel.Store.sp_GetPersonalBoard">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="ProjectManagementModel.sp_GetPersonalBoard_Result">
+                <ScalarProperty Name="BoardID" ColumnName="BoardID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="sp_GetTeamBoard" FunctionName="ProjectManagementModel.Store.sp_GetTeamBoard">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="ProjectManagementModel.sp_GetTeamBoard_Result">
+                <ScalarProperty Name="BoardID" ColumnName="BoardID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="sp_SwapList" FunctionName="ProjectManagementModel.Store.sp_SwapList" />
+          <FunctionImportMapping FunctionImportName="sp_SwapCardInsideList" FunctionName="ProjectManagementModel.Store.sp_SwapCardInsideList" />
+          <FunctionImportMapping FunctionImportName="sp_SwapCardToList" FunctionName="ProjectManagementModel.Store.sp_SwapCardToList" />
+          <FunctionImportMapping FunctionImportName="sp_RegisterAccount" FunctionName="ProjectManagementModel.Store.sp_RegisterAccount" />
+          <FunctionImportMapping FunctionImportName="sp_CreateProject" FunctionName="ProjectManagementModel.Store.sp_CreateProject" />
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
